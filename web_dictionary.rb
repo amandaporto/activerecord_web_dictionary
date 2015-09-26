@@ -1,5 +1,6 @@
 require 'sinatra'
 require 'active_record'
+require "sqlite3"
 require 'sinatra/reloader' if development?
 
 ActiveRecord::Base.establish_connection(
@@ -26,7 +27,7 @@ end
 post "/save" do
   word = params["word"]
   definition = params["definition"]
-  new_word = Definition.create(word: word, meaning: definition).valid?
+  new_word = Definition.create(word: word, meaning: definition)
 
   if new_word.valid? == true
     redirect to ("/")
