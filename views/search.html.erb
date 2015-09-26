@@ -38,12 +38,9 @@
   <a href="/"> Back to full dictionary </a>
   <p> Search Results </p>
     <ul>
-    <% @search_results.each do |hash| %>
       <li>
-        <%= hash[:word]%> =
-        <%= hash[:definition]%>
+        <%= @definitions_found%>
       </li>
-    <% end %>
     </ul>
   </p>
   </body>

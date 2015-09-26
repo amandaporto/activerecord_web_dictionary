@@ -45,10 +45,10 @@
     <p>Dictionary</p>
     <p>
     <ul>
-    <% @dictionary.each do |hash| %>
+    <% Definition.all.each do |entry| %>
       <li>
-      <%= hash[:word] %> =
-      <%= hash[:definition] %>
+      <%= entry.word %> =
+      <%= entry.meaning %>
       </li>
       <% end %>
     </ul>

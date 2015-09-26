@@ -1,16 +1,21 @@
 require 'sinatra'
+require 'active_record'
 require 'sinatra/reloader' if development?
+
+ActiveRecord::Base.establish_connection(
+  adapter: "sqlite3",
+  database: File.dirname(__FILE__) + "/webdictionary.db"
+)
 
 Tilt.register Tilt::ERBTemplate, "html.erb"
 
+class Definition < ActiveRecord::Base
+  validates :word, presence: true
+  validates :meaning, presence: true
+end
+
 
 get "/" do
-  if File.exist?("data.yml")
-    @dictionary = YAML::load(File.read("data.yml"))
-  else
-    @dictionary = []
-  end
-
   erb :display
 end
 
@@ -19,31 +24,26 @@ get "/add" do
 end
 
 post "/save" do
-
-  if File.exist?("data.yml")
-    @dictionary = YAML::load(File.read("data.yml"))
-  else
-    @dictionary = []
-  end
   word = params["word"]
   definition = params["definition"]
-  new_word = {word: word, definition: definition}
-  @dictionary << new_word
-  File.write("data.yml", @dictionary.to_yaml)
+  new_word = Definition.create(word: word, meaning: definition)
 
-  status 302
-  header["Location"] = "/"
+  if new_word.valid?
+    # ??
+  else
+    redirect to ("/error")
+  end
+
   erb :save
 end
 
-post "/search" do
-  if File.exist?("data.yml")
-    @dictionary = YAML::load(File.read("data.yml"))
-  else
-    @dictionary = []
-  end
+get "/error" do
+  erb :error
+end
 
-  @search_results = @dictionary.select { |hash| hash[:word] == params["to_search"] }
+post "/search" do
+  search_results = Definition.find_by(word: params["to_search"])
+  @definitions_found = "#{search_results.word} - #{search_results.meaning}"
 
   erb :search
 end
