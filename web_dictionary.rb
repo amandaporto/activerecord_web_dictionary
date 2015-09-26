@@ -26,10 +26,10 @@ end
 post "/save" do
   word = params["word"]
   definition = params["definition"]
-  new_word = Definition.create(word: word, meaning: definition)
+  new_word = Definition.create(word: word, meaning: definition).valid?
 
-  if new_word.valid?
-    # ??
+  if new_word.valid? == true
+    redirect to ("/")
   else
     redirect to ("/error")
   end
